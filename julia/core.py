@@ -162,6 +162,16 @@ def isafunction(julia, julia_name, mod_name=""):
         return False
 
 
+def iscallable(julia, julia_name, mod_name=""):
+    code = "!isempty(methods({}))".format(julia_name)
+    if mod_name:
+        code = "!isempty(methods({}.{}))".format(mod_name, julia_name)
+    try:
+        return julia.eval(code)
+    except:
+        return False
+
+
 def module_functions(julia, module):
     """Compute the function names in the julia module"""
     bases = {}
@@ -181,7 +191,7 @@ def module_functions(julia, module):
                 continue
             if name.startswith("_"):
                 continue
-            if not isafunction(julia, name):
+            if not iscallable(julia, name):
                 continue
             attr_name = name
             if name.endswith("!"):
